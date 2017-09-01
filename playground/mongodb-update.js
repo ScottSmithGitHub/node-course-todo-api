@@ -25,7 +25,5 @@ MongoClient.connect('mongodb://localhost:27017/ToDoApp', (err, db) => {
     console.log(result);
   });
 
-  // 59a984d30b6c53bb29933fb4
-
   //db.close();
 });
