@@ -4,8 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node server/server.js",
     "test": "mocha **/*.test.js",
     "test-watch": "nodemon --exec \"npm test\""
+  },
+  "emgines" : {
+    "node": "8.4.0"
   },
   "author": "Scott Smith",
   "license": "ISC",
