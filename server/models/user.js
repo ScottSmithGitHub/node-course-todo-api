@@ -7,14 +7,12 @@ var UserSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    minlength: 1,
     trim: true,
+    minlength: 1,
     unique: true,
     validate: {
-      validator: (value) => {
-        return validator.isEmail(value);
-      },
-      message: `{VALUE} is not a valid email`
+      validator: validator.isEmail,
+      message: '{VALUE} is not a valid email'
     }
   },
   password: {
@@ -30,7 +28,7 @@ var UserSchema = new mongoose.Schema({
     token: {
       type: String,
       required: true
-    }   
+    }
   }]
 });
 
@@ -44,7 +42,7 @@ UserSchema.methods.toJSON = function () {
 UserSchema.methods.generateAuthToken = function () {
   var user = this;
   var access = 'auth';
-  var token = jwt.sign({_id: user._id.toHexString(), access}, '123abc').toString();
+  var token = jwt.sign({_id: user._id.toHexString(), access}, 'abc123').toString();
 
   user.tokens.push({access, token});
 
@@ -53,6 +51,23 @@ UserSchema.methods.generateAuthToken = function () {
   });
 };
 
-var User = mongoose.model('Users', UserSchema);
+UserSchema.statics.findByToken = function (token) {
+  var User = this;
+  var decoded;
 
-module.exports = {User};
+  try {
+    decoded = jwt.verify(token, 'abc123');
+  } catch (e) {
+    return Promise.reject();
+  }
+
+  return User.findOne({
+    '_id': decoded._id,
+    'tokens.token': token,
+    'tokens.access': 'auth'
+  });
+};
+
+var User = mongoose.model('User', UserSchema);
+
+module.exports = {User}
